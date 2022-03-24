@@ -3,6 +3,7 @@ const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
 
+// get all categories
 router.get('/', (req, res) => {
   Category.findAll({
     include: [
@@ -18,6 +19,7 @@ router.get('/', (req, res) => {
   });
 });
 
+// get single category
 router.get('/:id', (req, res) => {
   Category.findOne({
     where: {
@@ -27,7 +29,13 @@ router.get('/:id', (req, res) => {
       model: Product
     }]
   })
-  .then(categories => res.json(categories))
+  .then(categories => {
+    if (!categories) {
+      res.status(404).json({ message: 'No category found with that ID' });
+      return;
+    }
+    res.json(categories)
+  })
   .catch(err => {
     if (err) {
       console.log(err);
